@@ -85,16 +85,18 @@ shinyServer(function(input, output) {
 
       # Flag if message contained image or media
       Messages$MediaOmitted <- FALSE
-      Messages$MediaOmitted[grep("<Media omitted>", Messages$Text)] <- TRUE
-      Messages$MediaOmitted[grep("<Medien weggelassen>", Messages$Text)] <- TRUE
 
       Messages$Text.Cleaned <- Messages$Text
 
-      Messages$Text.Cleaned[grep("<Media omitted>", Messages$Text.Cleaned)] <- gsub("<Media omitted>",
-                                                                                    "", Messages$Text.Cleaned[grep("<Media omitted>", Messages$Text.Cleaned)])
+      # Flag messages that contain media
+      Filter.Media <- grep("<Media omitted>", Messages$Text.Cleaned)
+      Messages$MediaOmitted[Filter.Media] <- TRUE
+      Messages$Text.Cleaned[Filter.Media] <- gsub("<Media omitted>","", Messages$Text.Cleaned[Filter.Media])
 
-      Messages$Text.Cleaned[grep("<<Medien weggelassen>", Messages$Text.Cleaned)] <- gsub("<Medien weggelassen>",
-                                                                                    "", Messages$Text.Cleaned[grep("<Medien weggelassen>", Messages$Text.Cleaned)])
+      Filter.Media <- grep("<Medien weggelassen>", Messages$Text.Cleaned)
+      Messages$MediaOmitted[Filter.Media] <- TRUE
+      Messages$Text.Cleaned[Filter.Media] <- gsub("<Medien weggelassen>","", Messages$Text.Cleaned[Filter.Media])
+
 
       # Remove Smileys
       Messages$Text.Cleaned <- sapply(Messages$Text.Cleaned, function(row) iconv(row,
